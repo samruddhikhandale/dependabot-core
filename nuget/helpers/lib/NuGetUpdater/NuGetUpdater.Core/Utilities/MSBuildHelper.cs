@@ -17,6 +17,8 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Locator;
 using Microsoft.Extensions.FileSystemGlobbing;
 
+using NuGet.Configuration;
+
 using NuGetUpdater.Core.Utilities;
 
 namespace NuGetUpdater.Core;
@@ -348,7 +350,20 @@ internal static partial class MSBuildHelper
         var nugetConfigPath = PathHelper.GetFileInDirectoryOrParent(projectDirectory, repoRoot, "NuGet.Config", caseSensitive: false);
         if (nugetConfigPath is not null)
         {
+            var nugetConfigDir = Path.GetDirectoryName(nugetConfigPath);
             File.Copy(nugetConfigPath, Path.Combine(tempDir.FullName, "NuGet.Config"));
+
+            // We need to copy local package sources from the NuGet.Config file to the temp directory
+            var settings = Settings.LoadSpecificSettings(nugetConfigDir, Path.GetFileName(nugetConfigPath));
+            var packageSourceProvider = new PackageSourceProvider(settings);
+            var localSources = packageSourceProvider.LoadPackageSources().Where(s => s.IsLocal);
+
+            foreach(var localSource in localSources)
+            {
+                var subDir = localSource.Source.Split(nugetConfigDir)[1];
+                var destPath = Path.Join(tempDir.FullName, subDir);
+                PathHelper.CopyDirectory(localSource.Source, destPath);
+            }
         }
 
         var packageReferences = string.Join(

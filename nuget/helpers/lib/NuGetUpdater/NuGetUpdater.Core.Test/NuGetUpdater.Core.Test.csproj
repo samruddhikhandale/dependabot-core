@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Content Include="..\xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\spec\fixtures\nuget_responses\local_repo\**" CopyToOutputDirectory="PreserveNewest" LinkBase="local_repo\" />
   </ItemGroup>
 
 </Project>
