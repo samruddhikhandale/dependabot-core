@@ -404,8 +404,8 @@ public class MSBuildHelperTests
                 "netstandard2.0",
                 [new Dependency("Newtonsoft.Json", "4.5.11", DependencyType.Unknown)]
             );
-            Assert.Equal(expectedDependencies, actualDependencies);
             Assert.False(Directory.Exists(tempNuGetHttpCacheDirectory), "The .nuget/.v3-cache directory was created, meaning http was used.");
+            Assert.Equal(expectedDependencies, actualDependencies);
         }
         finally
         {
