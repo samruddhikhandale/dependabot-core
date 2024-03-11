@@ -35,11 +35,13 @@ module Dependabot
       private_class_method def self.get_package_versions_local(dependency_name, repository_details)
         url = repository_details.fetch(:base_url)
         raise "Local repo #{url} doesn't exist or isn't a directory" unless File.exist?(url) && File.directory?(url)
+        raise "Local repo  #{url} uses '..' which could cause it to escape the Git repository" if url.include? ".."
 
         package_dir = File.join(url, dependency_name)
 
         versions = Set.new
         return versions unless File.exist?(package_dir) && File.directory?(package_dir)
+
         Dir.each_child(package_dir) do |child|
           versions.add(child) if File.directory?(File.join(package_dir, child))
         end
