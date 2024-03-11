@@ -37,7 +37,9 @@ module Dependabot
         raise "Local repo #{url} doesn't exist or isn't a directory" unless File.exist?(url) && File.directory?(url)
 
         package_dir = File.join(url, dependency_name)
+
         versions = Set.new
+        return versions unless File.exist?(package_dir) && File.directory?(package_dir)
         Dir.each_child(package_dir) do |child|
           versions.add(child) if File.directory?(File.join(package_dir, child))
         end

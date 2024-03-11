@@ -364,7 +364,10 @@ internal static partial class MSBuildHelper
                 {
                     var subDir = localSource.Source.Split(nugetConfigDir)[1];
                     var destPath = Path.Join(tempDir.FullName, subDir);
-                    PathHelper.CopyDirectory(localSource.Source, destPath);
+                    if (Directory.Exists(localSource.Source))
+                    {
+                        PathHelper.CopyDirectory(localSource.Source, destPath);
+                    }
                 }
             }
             catch (NuGetConfigurationException ex)
